@@ -3,9 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { config } from './config/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GitHubService } from './git-hub/git-hub.service';
-import { GitHubController } from './git-hub/git-hub.controller';
-import { GitHubModule } from './git-hub/git-hub.module';
+import { GitHubController } from './git-hub-webhook/git-hub.controller';
+import { GitHubModule } from './git-hub-webhook/git-hub.module';
 
 @Module({
   imports: [
@@ -16,6 +15,6 @@ import { GitHubModule } from './git-hub/git-hub.module';
     GitHubModule,
   ],
   controllers: [AppController, GitHubController],
-  providers: [AppService, GitHubService],
+  providers: [AppService],
 })
 export class AppModule {}
