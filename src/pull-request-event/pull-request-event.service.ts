@@ -9,12 +9,16 @@ export class PullRequestEventService {
     private readonly gitHubService: GitHubService,
   ) {}
 
-  handlePullRequestEvents(actionType: PullRequestActionType, payload: any) {
+  async handlePullRequestEvents(
+    actionType: PullRequestActionType,
+    payload: any,
+  ) {
     if (actionType === PullRequestActionType.REOPENED) {
-      this.gitHubService.postCommentOnPullRequest(
-        'Thanks for opening this pull request!',
-        payload,
-      );
+      // this.gitHubService.postCommentOnPullRequest(
+      //   'Thanks for opening this pull request!',
+      //   payload,
+      // );
+      await this.gitHubService.getPullRequestFiles(payload);
     }
   }
 }
