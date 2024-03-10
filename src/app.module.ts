@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GitHubController } from './git-hub-webhook/git-hub.controller';
 import { GitHubModule } from './git-hub-webhook/git-hub.module';
+import { ChatGptModule } from './chat-gpt/chat-gpt.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { GitHubModule } from './git-hub-webhook/git-hub.module';
       load: [config],
     }),
     GitHubModule,
+    ChatGptModule,
   ],
   controllers: [AppController, GitHubController],
   providers: [AppService],

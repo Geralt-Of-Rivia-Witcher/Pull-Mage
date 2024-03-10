@@ -89,12 +89,12 @@ export class GitHubService {
       {
         owner: payload.repository.owner.login,
         repo: payload.repository.name,
-        pull_number: 2,
+        pull_number: 4,
         headers: {
           'x-github-api-version': '2022-11-28',
         },
       },
     );
-    console.log(res);
+    return res.data;
   }
 }

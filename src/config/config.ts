@@ -9,4 +9,7 @@ export const config = (): IConfig => ({
     webhoookSecret: process.env.GITHUB_WEBHOOK_SECRET,
     privateKeyPath: process.env.GITHUB_PRIVATE_KEY_PATH,
   },
+  openai: {
+    apiKey: process.env.OPENAI_API_KEY,
+  },
 });
