@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 import { IGithubConfig } from '../config/interface/config.interface';
 import { WebhookEvents } from './enums/webhook-events.enum';
 import { PullRequestEventService } from '../pull-request-event/pull-request-event.service';
-import * as jwt from 'jsonwebtoken';
 import { IssueCommentService } from '../issue-comment/issue-comment.service';
 import { IPostCommentPayload } from './interfaces/post-comment-payload.interface';
 import { IGetPullRequestFiles } from './interfaces/get-pull-request-files.interface';
@@ -12,6 +11,7 @@ import { IWekhookPayload } from './interfaces/github-wekhook.interface';
 import { IFileChange } from '../pull-request-event/interfaces/file-changes.interface';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class GitHubService {
@@ -24,6 +24,7 @@ export class GitHubService {
     private readonly puPullRequestEventService: PullRequestEventService,
     private readonly issueCommentService: IssueCommentService,
     private readonly httpService: HttpService,
+    private readonly jwtService: JwtService,
   ) {
     this.gitHubConfig = this.configService.get<IGithubConfig>('github');
     this.octokitApp = new App({
@@ -84,14 +85,16 @@ export class GitHubService {
 
   async getPullRequestFiles(ctx: IGetPullRequestFiles): Promise<IFileChange[]> {
     const { owner, repositoryName, installationId, issueNumber } = ctx;
-    const jwtToken = jwt.sign(
+    const jwtToken = this.jwtService.sign(
       {
         iat: Math.floor(Date.now() / 1000) - 60,
         exp: Math.floor(Date.now() / 1000) + 10 * 60,
         iss: this.gitHubConfig.appId,
       },
-      this.gitHubConfig.privateKey,
-      { algorithm: 'RS256' },
+      {
+        algorithm: 'RS256',
+        privateKey: this.gitHubConfig.privateKey,
+      },
     );
     const token = await firstValueFrom(
       this.httpService.post(
