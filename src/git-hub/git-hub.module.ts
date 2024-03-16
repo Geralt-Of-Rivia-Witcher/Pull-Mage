@@ -5,9 +5,10 @@ import { PullRequestEventService } from '../pull-request-event/pull-request-even
 import { ChatGptModule } from '../chat-gpt/chat-gpt.module';
 import { IssueCommentModule } from '../issue-comment/issue-comment.module';
 import { HttpModule } from '@nestjs/axios';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [ChatGptModule, IssueCommentModule, HttpModule],
+  imports: [ChatGptModule, IssueCommentModule, HttpModule, JwtModule],
   controllers: [GitHubController],
   providers: [GitHubService, PullRequestEventService],
   exports: [GitHubService],
