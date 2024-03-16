@@ -34,24 +34,31 @@ export class GitHubService {
   }
 
   handleWebhookEvents(event: WebhookEvents, payload: IWekhookPayload) {
-    if (event === WebhookEvents.PULL_REQUEST) {
-      this.puPullRequestEventService.handlePullRequestEvents({
-        action: payload.action,
-        owner: payload.repository.owner.login,
-        repositoryName: payload.repository.name,
-        issueNumber: payload.number,
-        installationId: payload.installation.id,
-      });
-    } else if (event === WebhookEvents.ISSUE_COMMENT) {
-      this.issueCommentService.handleIssueCommentEvents({
-        action: payload.action,
-        comment: payload.comment.body,
-        owner: payload.repository.owner.login,
-        repositoryName: payload.repository.name,
-        issueNumber: payload.issue.number,
-        installationId: payload.installation.id,
-      });
-    }
+    const eventToServiceMethod: Record<
+      WebhookEvents,
+      (payload: IWekhookPayload) => void
+    > = {
+      [WebhookEvents.PULL_REQUEST]: (payload) => {
+        this.puPullRequestEventService.handlePullRequestEvents({
+          action: payload.action,
+          owner: payload.repository.owner.login,
+          repositoryName: payload.repository.name,
+          issueNumber: payload.number,
+          installationId: payload.installation.id,
+        });
+      },
+      [WebhookEvents.ISSUE_COMMENT]: (payload) => {
+        this.issueCommentService.handleIssueCommentEvents({
+          action: payload.action,
+          comment: payload.comment.body,
+          owner: payload.repository.owner.login,
+          repositoryName: payload.repository.name,
+          issueNumber: payload.issue.number,
+          installationId: payload.installation.id,
+        });
+      },
+    };
+    eventToServiceMethod[event](payload);
   }
 
   async postCommentOnPullRequest(ctx: IPostCommentPayload) {

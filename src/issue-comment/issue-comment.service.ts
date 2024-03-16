@@ -7,9 +7,19 @@ import { ChatGptRequestType } from '../chat-gpt/interfaces/chat-gpt-request-type
 
 @Injectable()
 export class IssueCommentService {
+  private readonly commentTypeToRequestType: Record<
+    IssueComments,
+    ChatGptRequestType
+  >;
   constructor(
     private readonly pullRequestEventService: PullRequestEventService,
-  ) {}
+  ) {
+    this.commentTypeToRequestType = {
+      [IssueComments.REVIEW]: ChatGptRequestType.PR_REVIEW,
+      [IssueComments.EXPLAIN]: ChatGptRequestType.CODE_EXPLANATION,
+      [IssueComments.ASK]: ChatGptRequestType.ASK_QUESTION,
+    };
+  }
 
   handleIssueCommentEvents(payload: IHandleIssueCommentPayload) {
     const { action } = payload;
@@ -26,20 +36,12 @@ export class IssueCommentService {
     const commentType = comment.split('=')[0].trim();
     const additionalRequest = comment.split('=')[1]?.trim();
 
-    if (commentType === IssueComments.REVIEW) {
+    const requestType = this.commentTypeToRequestType[commentType];
+
+    if (requestType) {
       this.pullRequestEventService.performValidCommentAction({
         ...payload,
-        type: ChatGptRequestType.PR_REVIEW,
-      });
-    } else if (commentType === IssueComments.EXPLAIN) {
-      this.pullRequestEventService.performValidCommentAction({
-        ...payload,
-        type: ChatGptRequestType.CODE_EXPLANATION,
-      });
-    } else if (commentType === IssueComments.ASK) {
-      this.pullRequestEventService.performValidCommentAction({
-        ...payload,
-        type: ChatGptRequestType.ASK_QUESTION,
+        type: requestType,
         question: additionalRequest,
       });
     }
