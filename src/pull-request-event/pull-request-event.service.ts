@@ -1,6 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PullRequestActionType } from './enums/pulll-request-actions.enum';
-import { GitHubService } from '../git-hub-webhook/git-hub.service';
+import { GitHubService } from '../git-hub/git-hub.service';
 import { ChatGptService } from 'src/chat-gpt/chat-gpt.service';
 
 @Injectable()

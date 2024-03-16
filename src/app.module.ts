@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { config } from './config/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GitHubController } from './git-hub-webhook/git-hub.controller';
-import { GitHubModule } from './git-hub-webhook/git-hub.module';
+import { GitHubController } from './git-hub/git-hub.controller';
+import { GitHubModule } from './git-hub/git-hub.module';
 import { ChatGptModule } from './chat-gpt/chat-gpt.module';
 import { IssueCommentModule } from './issue-comment/issue-comment.module';
 
