@@ -7,6 +7,7 @@ import { WebhookEvents } from './enums/webhook-events.enum';
 import { PullRequestEventService } from '../pull-request-event/pull-request-event.service';
 import * as jwt from 'jsonwebtoken';
 import axios from 'axios';
+import { IssueCommentService } from '../issue-comment/issue-comment.service';
 
 @Injectable()
 export class GitHubService {
@@ -18,6 +19,7 @@ export class GitHubService {
     private readonly configService: ConfigService,
     @Inject(forwardRef(() => PullRequestEventService))
     private readonly puPullRequestEventService: PullRequestEventService,
+    private readonly issueCommentService: IssueCommentService,
   ) {
     this.gitHubConfig = this.configService.get<IGithubConfig>('github');
     this.octokitApp = new App({
@@ -34,14 +36,24 @@ export class GitHubService {
   }
 
   handleWebhookEvents(event: WebhookEvents, payload: any) {
-    this.puPullRequestEventService.handlePullRequestEvents(
-      payload.action,
-      payload,
-    );
-    return '';
+    if (event === WebhookEvents.PULL_REQUEST) {
+      this.puPullRequestEventService.handlePullRequestEvents(
+        payload.action,
+        payload,
+      );
+    } else if (event === WebhookEvents.ISSUE_COMMENT) {
+      this.issueCommentService.handleIssueCommentEvents(
+        payload.action,
+        payload,
+      );
+    }
   }
 
-  async postCommentOnPullRequest(message: string, payload: any) {
+  async postCommentOnPullRequest(
+    message: string,
+    payload: any,
+    number: string,
+  ) {
     const octokit = await this.octokitApp.getInstallationOctokit(
       payload.installation.id,
     );
@@ -51,7 +63,7 @@ export class GitHubService {
       {
         owner: payload.repository.owner.login,
         repo: payload.repository.name,
-        issue_number: payload.pull_request.number,
+        issue_number: number,
         body: message,
         headers: {
           'x-github-api-version': '2022-11-28',

@@ -19,14 +19,22 @@ export class PullRequestEventService {
       actionType === PullRequestActionType.REOPENED ||
       actionType === PullRequestActionType.OPENED
     ) {
-      const fileChanges = await this.gitHubService.getPullRequestFiles(payload);
-      const formattedFileChanges = JSON.stringify(
-        this.reformattedFileChanges(fileChanges),
-      );
-      const gptPrReview =
-        await this.chatGptService.getPrReview(formattedFileChanges);
-      this.gitHubService.postCommentOnPullRequest(gptPrReview, payload);
+      this.doPrReview(payload);
     }
+  }
+
+  async doPrReview(payload: any) {
+    const fileChanges = await this.gitHubService.getPullRequestFiles(payload);
+    const formattedFileChanges = JSON.stringify(
+      this.reformattedFileChanges(fileChanges),
+    );
+    const gptPrReview =
+      await this.chatGptService.getPrReview(formattedFileChanges);
+    this.gitHubService.postCommentOnPullRequest(
+      gptPrReview,
+      payload,
+      payload.issue.number,
+    );
   }
 
   private reformattedFileChanges(fileChanges: any) {
