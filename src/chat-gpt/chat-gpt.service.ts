@@ -21,44 +21,44 @@ export class ChatGptService {
       return this.getPrReview(fileChanges);
     } else if (type === ChatGptRequestType.CODE_EXPLANATION) {
       return this.getCodeExplanation(fileChanges);
-    } else if (type === ChatGptRequestType.QUESTION) {
+    } else if (type === ChatGptRequestType.ASK_QUESTION) {
       return this.askQuestion(question, fileChanges);
     }
   }
 
   private async getPrReview(fileChanges: string): Promise<string> {
-    // const completion = await this.openai.chat.completions.create({
-    //   messages: [
-    //     {
-    //       role: 'system',
-    //       content:
-    //         'You are reviewing a pull request and suggesting changes. Your role is to ensure code quality, correctness, and alignment with project standards.',
-    //     },
-    //     {
-    //       role: 'system',
-    //       content:
-    //         'Consider everything from variable name changes to logic improvement, code quality, design patterns, performance, security, dependencies, and more.',
-    //     },
-    //     {
-    //       role: 'system',
-    //       content:
-    //         'Please provide detailed suggestions for improvements, covering all aspects of the code changes. Each change includes information such as filename, status (modified/added/deleted), additions, deletions, optional previous_filename and the patches containing the actual code changes.',
-    //     },
-    //     {
-    //       role: 'system',
-    //       content:
-    //         'Avoid generating new code and instead provide clear and detailed recommendations for the author to implement.',
-    //     },
-    //     {
-    //       role: 'user',
-    //       content: fileChanges,
-    //     },
-    //   ],
-    //   model: 'gpt-3.5-turbo',
-    // });
+    const completion = await this.openai.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You are reviewing a pull request and suggesting changes. Your role is to ensure code quality, correctness, and alignment with project standards.',
+        },
+        {
+          role: 'system',
+          content:
+            'Consider everything from variable name changes to logic improvement, code quality, design patterns, performance, security, dependencies, and more.',
+        },
+        {
+          role: 'system',
+          content:
+            'Please provide detailed suggestions for improvements, covering all aspects of the code changes. Each change includes information such as filename, status (modified/added/deleted), additions, deletions, optional previous_filename and the patches containing the actual code changes.',
+        },
+        {
+          role: 'system',
+          content:
+            'Avoid generating new code and instead provide clear and detailed recommendations for the author to implement.',
+        },
+        {
+          role: 'user',
+          content: fileChanges,
+        },
+      ],
+      model: 'gpt-3.5-turbo',
+    });
 
-    // return completion.choices[0].message.content;
-    return 'This is a placeholder for the GPT response to save credits. #MaiGareebHoon';
+    return completion.choices[0].message.content;
+    // return 'This is a placeholder for the GPT response to save credits. #MaiGareebHoon';
   }
 
   private async getCodeExplanation(fileChanges: string): Promise<string> {
