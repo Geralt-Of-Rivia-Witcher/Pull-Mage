@@ -4,7 +4,7 @@ import { GitHubService } from '../git-hub/git-hub.service';
 import { ChatGptService } from 'src/chat-gpt/chat-gpt.service';
 import { IFileChange } from './interfaces/file-changes.interface';
 import { IGetPrReview } from './interfaces/get-pr-review.interface';
-import { IWekhookPayload } from '../git-hub/interfaces/github-wekhook.interface';
+import { IPullRequestEvent } from './interfaces/pull-request-event.interface';
 
 @Injectable()
 export class PullRequestEventService {
@@ -14,21 +14,23 @@ export class PullRequestEventService {
     private readonly chatGptService: ChatGptService,
   ) {}
 
-  async handlePullRequestEvents(
-    actionType: PullRequestActionType,
-    payload: IWekhookPayload,
-  ) {
+  async handlePullRequestEvents(payload: IPullRequestEvent) {
+    const { action } = payload;
     if (
-      actionType === PullRequestActionType.REOPENED ||
-      actionType === PullRequestActionType.OPENED
+      action === PullRequestActionType.REOPENED ||
+      action === PullRequestActionType.OPENED
     ) {
-      this.doPrReview({
-        owner: payload.repository.owner.login,
-        repositoryName: payload.repository.name,
-        issueNumber: payload.issue.number,
-        installationId: payload.installation.id,
-      });
+      this.sendIntroductionMessage(payload);
     }
+  }
+
+  async sendIntroductionMessage(ctx: IPullRequestEvent) {
+    const message = `🤖 Hello! I'm a bot designed to assist with pull request reviews.
+    To trigger my review, please add a comment containing the word "/review".`;
+    this.gitHubService.postCommentOnPullRequest({
+      ...ctx,
+      message,
+    });
   }
 
   async doPrReview(ctx: IGetPrReview) {

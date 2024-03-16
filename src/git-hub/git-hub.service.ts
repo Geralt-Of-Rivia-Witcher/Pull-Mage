@@ -35,10 +35,13 @@ export class GitHubService {
 
   handleWebhookEvents(event: WebhookEvents, payload: IWekhookPayload) {
     if (event === WebhookEvents.PULL_REQUEST) {
-      this.puPullRequestEventService.handlePullRequestEvents(
-        payload.action,
-        payload,
-      );
+      this.puPullRequestEventService.handlePullRequestEvents({
+        action: payload.action,
+        owner: payload.repository.owner.login,
+        repositoryName: payload.repository.name,
+        issueNumber: payload.number,
+        installationId: payload.installation.id,
+      });
     } else if (event === WebhookEvents.ISSUE_COMMENT) {
       this.issueCommentService.handleIssueCommentEvents({
         action: payload.action,

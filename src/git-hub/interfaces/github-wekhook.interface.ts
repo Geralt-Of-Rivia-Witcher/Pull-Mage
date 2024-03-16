@@ -12,8 +12,9 @@ export interface IWekhookPayload {
     };
   };
   issue: {
-    number: number;
+    number: number; // Get this from the issue comment payload
   };
+  number: number; // Get this from the pull request payload
   installation: {
     id: number;
   };
