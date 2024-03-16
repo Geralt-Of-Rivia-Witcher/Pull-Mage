@@ -5,12 +5,13 @@ import { IGithubConfig } from '../config/interface/config.interface';
 import { WebhookEvents } from './enums/webhook-events.enum';
 import { PullRequestEventService } from '../pull-request-event/pull-request-event.service';
 import * as jwt from 'jsonwebtoken';
-import axios from 'axios';
 import { IssueCommentService } from '../issue-comment/issue-comment.service';
 import { IPostCommentPayload } from './interfaces/post-comment-payload.interface';
 import { IGetPullRequestFiles } from './interfaces/get-pull-request-files.interface';
 import { IWekhookPayload } from './interfaces/github-wekhook.interface';
 import { IFileChange } from '../pull-request-event/interfaces/file-changes.interface';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class GitHubService {
@@ -22,6 +23,7 @@ export class GitHubService {
     @Inject(forwardRef(() => PullRequestEventService))
     private readonly puPullRequestEventService: PullRequestEventService,
     private readonly issueCommentService: IssueCommentService,
+    private readonly httpService: HttpService,
   ) {
     this.gitHubConfig = this.configService.get<IGithubConfig>('github');
     this.octokitApp = new App({
@@ -91,16 +93,18 @@ export class GitHubService {
       this.gitHubConfig.privateKey,
       { algorithm: 'RS256' },
     );
-    const token = await axios.post(
-      `https://api.github.com/app/installations/${installationId}/access_tokens`,
-      {},
-      {
-        headers: {
-          Accept: 'application/vnd.github+json',
-          Authorization: `Bearer ${jwtToken}`,
-          'x-github-api-version': '2022-11-28',
+    const token = await firstValueFrom(
+      this.httpService.post(
+        `https://api.github.com/app/installations/${installationId}/access_tokens`,
+        {},
+        {
+          headers: {
+            Accept: 'application/vnd.github+json',
+            Authorization: `Bearer ${jwtToken}`,
+            'x-github-api-version': '2022-11-28',
+          },
         },
-      },
+      ),
     );
     const octokit = new Octokit({
       auth: token.data.token,
