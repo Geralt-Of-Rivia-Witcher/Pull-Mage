@@ -71,7 +71,7 @@ export class GitHubService {
   }
 
   async getPullRequestFiles(ctx: IGetPullRequestFiles): Promise<IFileChange[]> {
-    const { owner, repositoryName, installationId } = ctx;
+    const { owner, repositoryName, installationId, issueNumber } = ctx;
     const jwtToken = jwt.sign(
       {
         iat: Math.floor(Date.now() / 1000) - 60,
@@ -100,7 +100,7 @@ export class GitHubService {
       {
         owner: owner,
         repo: repositoryName,
-        pull_number: 4,
+        pull_number: issueNumber,
         headers: {
           'x-github-api-version': '2022-11-28',
         },

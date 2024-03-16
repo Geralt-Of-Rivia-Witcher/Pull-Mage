@@ -32,21 +32,13 @@ export class PullRequestEventService {
   }
 
   async doPrReview(ctx: IGetPrReview) {
-    const { owner, repositoryName, issueNumber, installationId } = ctx;
-    const fileChanges = await this.gitHubService.getPullRequestFiles({
-      owner,
-      repositoryName,
-      installationId,
-    });
+    const fileChanges = await this.gitHubService.getPullRequestFiles(ctx);
     const formattedFileChanges = this.reformattedFileChanges(fileChanges);
     const gptPrReview =
       await this.chatGptService.getPrReview(formattedFileChanges);
     this.gitHubService.postCommentOnPullRequest({
+      ...ctx,
       message: gptPrReview,
-      owner,
-      repositoryName,
-      issueNumber,
-      installationId,
     });
   }
 

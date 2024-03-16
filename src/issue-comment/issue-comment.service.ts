@@ -21,16 +21,10 @@ export class IssueCommentService {
   }
 
   matchCommentAndPerformAction(payload: IHandleIssueCommentPayload) {
-    const { comment, owner, repositoryName, issueNumber, installationId } =
-      payload;
+    const { comment } = payload;
 
     if (comment === Comments.REVIEW) {
-      this.pullRequestEventService.doPrReview({
-        owner,
-        repositoryName,
-        issueNumber,
-        installationId,
-      });
+      this.pullRequestEventService.doPrReview(payload);
     }
   }
 }
