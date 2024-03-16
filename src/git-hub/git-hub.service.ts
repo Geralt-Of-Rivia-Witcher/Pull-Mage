@@ -1,6 +1,5 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { App, Octokit } from 'octokit';
-import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { IGithubConfig } from '../config/interface/config.interface';
 import { WebhookEvents } from './enums/webhook-events.enum';
@@ -16,8 +15,7 @@ import { IFileChange } from '../pull-request-event/interfaces/file-changes.inter
 @Injectable()
 export class GitHubService {
   private readonly gitHubConfig: IGithubConfig;
-  private readonly octokitApp;
-  private readonly privateKeyFile;
+  private readonly octokitApp: App;
 
   constructor(
     private readonly configService: ConfigService,
@@ -28,15 +26,11 @@ export class GitHubService {
     this.gitHubConfig = this.configService.get<IGithubConfig>('github');
     this.octokitApp = new App({
       appId: this.gitHubConfig.appId,
-      privateKey: fs.readFileSync(this.gitHubConfig.privateKeyPath, 'utf8'),
+      privateKey: this.gitHubConfig.privateKey,
       webhooks: {
         secret: this.gitHubConfig.webhoookSecret,
       },
     });
-    this.privateKeyFile = fs.readFileSync(
-      this.gitHubConfig.privateKeyPath,
-      'utf8',
-    );
   }
 
   handleWebhookEvents(event: WebhookEvents, payload: IWekhookPayload) {
@@ -84,7 +78,7 @@ export class GitHubService {
         exp: Math.floor(Date.now() / 1000) + 10 * 60,
         iss: this.gitHubConfig.appId,
       },
-      this.privateKeyFile,
+      this.gitHubConfig.privateKey,
       { algorithm: 'RS256' },
     );
     const token = await axios.post(

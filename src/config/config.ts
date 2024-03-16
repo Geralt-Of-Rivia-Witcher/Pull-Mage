@@ -7,7 +7,7 @@ export const config = (): IConfig => ({
   github: {
     appId: process.env.GITHUB_APP_ID,
     webhoookSecret: process.env.GITHUB_WEBHOOK_SECRET,
-    privateKeyPath: process.env.GITHUB_PRIVATE_KEY_PATH,
+    privateKey: process.env.GITHUB_PRIVATE_KEY,
   },
   openai: {
     apiKey: process.env.OPENAI_API_KEY,

@@ -1,7 +1,7 @@
 export interface IGithubConfig {
   appId: string;
   webhoookSecret: string;
-  privateKeyPath: string;
+  privateKey: string;
 }
 
 interface IAppConfig {
