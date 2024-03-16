@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { IOpenAIConfig } from '../config/interface/config.interface';
+import { IChatGptRequest } from './interfaces/chat-gpt-request.interface';
+import { ChatGptRequestType } from './interfaces/chat-gpt-request-type.interface';
 
 @Injectable()
 export class ChatGptService {
@@ -13,7 +15,18 @@ export class ChatGptService {
     this.openai = new OpenAI({ apiKey: this.openaiConfig.apiKey });
   }
 
-  async getPrReview(fileChanges: string): Promise<string> {
+  async getGptResponse(ctx: IChatGptRequest): Promise<string> {
+    const { type, fileChanges, question } = ctx;
+    if (type === ChatGptRequestType.PR_REVIEW) {
+      return this.getPrReview(fileChanges);
+    } else if (type === ChatGptRequestType.CODE_EXPLANATION) {
+      return this.getCodeExplanation(fileChanges);
+    } else if (type === ChatGptRequestType.QUESTION) {
+      return this.askQuestion(question, fileChanges);
+    }
+  }
+
+  private async getPrReview(fileChanges: string): Promise<string> {
     // const completion = await this.openai.chat.completions.create({
     //   messages: [
     //     {
@@ -48,7 +61,7 @@ export class ChatGptService {
     return 'This is a placeholder for the GPT response to save credits. #MaiGareebHoon';
   }
 
-  async getCodeExplanation(fileChanges: string): Promise<string> {
+  private async getCodeExplanation(fileChanges: string): Promise<string> {
     const completion = await this.openai.chat.completions.create({
       messages: [
         {
@@ -77,7 +90,10 @@ export class ChatGptService {
     return completion.choices[0].message.content;
   }
 
-  async askQuestion(question: string, fileChanges: string): Promise<string> {
+  private async askQuestion(
+    question: string,
+    fileChanges: string,
+  ): Promise<string> {
     const completion = await this.openai.chat.completions.create({
       messages: [
         {

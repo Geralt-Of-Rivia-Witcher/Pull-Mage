@@ -1,0 +1,5 @@
+export enum ChatGptRequestType {
+  PR_REVIEW = 'PR_REVIEW',
+  CODE_EXPLANATION = 'CODE_EXPLANATION',
+  QUESTION = 'QUESTION',
+}

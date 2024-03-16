@@ -3,6 +3,7 @@ import { IssueCommentActions } from './enums/issue-comment-actions.enum';
 import { PullRequestEventService } from '../pull-request-event/pull-request-event.service';
 import { Comments } from './enums/comments.enum';
 import { IHandleIssueCommentPayload } from './interfaces/handle-issue-comment-payload.interface';
+import { ChatGptRequestType } from '../chat-gpt/interfaces/chat-gpt-request-type.interface';
 
 @Injectable()
 export class IssueCommentService {
@@ -24,7 +25,10 @@ export class IssueCommentService {
     const { comment } = payload;
 
     if (comment === Comments.REVIEW) {
-      this.pullRequestEventService.doPrReview(payload);
+      this.pullRequestEventService.performValidCommentAction({
+        ...payload,
+        type: ChatGptRequestType.PR_REVIEW,
+      });
     }
   }
 }

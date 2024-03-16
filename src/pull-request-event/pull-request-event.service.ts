@@ -3,7 +3,7 @@ import { PullRequestActionType } from './enums/pulll-request-actions.enum';
 import { GitHubService } from '../git-hub/git-hub.service';
 import { ChatGptService } from 'src/chat-gpt/chat-gpt.service';
 import { IFileChange } from './interfaces/file-changes.interface';
-import { IGetPrReview } from './interfaces/get-pr-review.interface';
+import { IValidCommentRequest } from './interfaces/get-pr-review.interface';
 import { IPullRequestEvent } from './interfaces/pull-request-event.interface';
 
 @Injectable()
@@ -33,11 +33,13 @@ export class PullRequestEventService {
     });
   }
 
-  async doPrReview(ctx: IGetPrReview) {
+  async performValidCommentAction(ctx: IValidCommentRequest) {
     const fileChanges = await this.gitHubService.getPullRequestFiles(ctx);
     const formattedFileChanges = this.reformattedFileChanges(fileChanges);
-    const gptPrReview =
-      await this.chatGptService.getPrReview(formattedFileChanges);
+    const gptPrReview = await this.chatGptService.getGptResponse({
+      ...ctx,
+      fileChanges: formattedFileChanges,
+    });
     this.gitHubService.postCommentOnPullRequest({
       ...ctx,
       message: gptPrReview,
