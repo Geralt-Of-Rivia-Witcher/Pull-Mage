@@ -8,6 +8,9 @@ import { PullRequestEventService } from '../pull-request-event/pull-request-even
 import * as jwt from 'jsonwebtoken';
 import axios from 'axios';
 import { IssueCommentService } from '../issue-comment/issue-comment.service';
+import { IPostCommentPayload } from './interfaces/post-comment-payload.interface';
+import { IGetPullRequestFiles } from './interfaces/get-pull-request-files.interface';
+import { IWekhookPayload } from './interfaces/github-wekhook.interface';
 
 @Injectable()
 export class GitHubService {
@@ -35,35 +38,35 @@ export class GitHubService {
     );
   }
 
-  handleWebhookEvents(event: WebhookEvents, payload: any) {
+  handleWebhookEvents(event: WebhookEvents, payload: IWekhookPayload) {
     if (event === WebhookEvents.PULL_REQUEST) {
       this.puPullRequestEventService.handlePullRequestEvents(
         payload.action,
         payload,
       );
     } else if (event === WebhookEvents.ISSUE_COMMENT) {
-      this.issueCommentService.handleIssueCommentEvents(
-        payload.action,
-        payload,
-      );
+      this.issueCommentService.handleIssueCommentEvents({
+        action: payload.action,
+        comment: payload.comment.body,
+        owner: payload.repository.owner.login,
+        repositoryName: payload.repository.name,
+        issueNumber: payload.issue.number,
+        installationId: payload.installation.id,
+      });
     }
   }
 
-  async postCommentOnPullRequest(
-    message: string,
-    payload: any,
-    number: string,
-  ) {
-    const octokit = await this.octokitApp.getInstallationOctokit(
-      payload.installation.id,
-    );
+  async postCommentOnPullRequest(ctx: IPostCommentPayload) {
+    const { message, owner, repositoryName, issueNumber, installationId } = ctx;
+    const octokit =
+      await this.octokitApp.getInstallationOctokit(installationId);
 
     await octokit.request(
       'POST /repos/{owner}/{repo}/issues/{issue_number}/comments',
       {
-        owner: payload.repository.owner.login,
-        repo: payload.repository.name,
-        issue_number: number,
+        owner: owner,
+        repo: repositoryName,
+        issue_number: issueNumber,
         body: message,
         headers: {
           'x-github-api-version': '2022-11-28',
@@ -72,7 +75,8 @@ export class GitHubService {
     );
   }
 
-  async getPullRequestFiles(payload: any) {
+  async getPullRequestFiles(ctx: IGetPullRequestFiles) {
+    const { owner, repositoryName, installationId } = ctx;
     const jwtToken = jwt.sign(
       {
         iat: Math.floor(Date.now() / 1000) - 60,
@@ -83,7 +87,7 @@ export class GitHubService {
       { algorithm: 'RS256' },
     );
     const token = await axios.post(
-      `https://api.github.com/app/installations/${payload.installation.id}/access_tokens`,
+      `https://api.github.com/app/installations/${installationId}/access_tokens`,
       {},
       {
         headers: {
@@ -99,8 +103,8 @@ export class GitHubService {
     const res = await octokit.request(
       'GET /repos/{owner}/{repo}/pulls/{pull_number}/files',
       {
-        owner: payload.repository.owner.login,
-        repo: payload.repository.name,
+        owner: owner,
+        repo: repositoryName,
         pull_number: 4,
         headers: {
           'x-github-api-version': '2022-11-28',
