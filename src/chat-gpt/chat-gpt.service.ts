@@ -13,7 +13,7 @@ export class ChatGptService {
     this.openai = new OpenAI(this.openaiConfig.apiKey);
   }
 
-  async getPrReview(fileChanges: string) {
+  async getPrReview(fileChanges: string): Promise<string> {
     // const completion = await this.openai.chat.completions.create({
     //   messages: [
     //     {

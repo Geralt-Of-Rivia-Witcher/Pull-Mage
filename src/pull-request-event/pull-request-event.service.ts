@@ -38,9 +38,7 @@ export class PullRequestEventService {
       repositoryName,
       installationId,
     });
-    const formattedFileChanges = JSON.stringify(
-      this.reformattedFileChanges(fileChanges),
-    );
+    const formattedFileChanges = this.reformattedFileChanges(fileChanges);
     const gptPrReview =
       await this.chatGptService.getPrReview(formattedFileChanges);
     this.gitHubService.postCommentOnPullRequest({
@@ -52,8 +50,8 @@ export class PullRequestEventService {
     });
   }
 
-  private reformattedFileChanges(fileChanges: IFileChange[]) {
-    const formattedFileChanges = fileChanges.map((fileChange: any) => {
+  private reformattedFileChanges(fileChanges: IFileChange[]): string {
+    const formattedFileChanges = fileChanges.map((fileChange) => {
       return {
         filename: fileChange.filename,
         status: fileChange.status,

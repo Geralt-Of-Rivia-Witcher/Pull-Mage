@@ -11,6 +11,7 @@ import { IssueCommentService } from '../issue-comment/issue-comment.service';
 import { IPostCommentPayload } from './interfaces/post-comment-payload.interface';
 import { IGetPullRequestFiles } from './interfaces/get-pull-request-files.interface';
 import { IWekhookPayload } from './interfaces/github-wekhook.interface';
+import { IFileChange } from '../pull-request-event/interfaces/file-changes.interface';
 
 @Injectable()
 export class GitHubService {
@@ -75,7 +76,7 @@ export class GitHubService {
     );
   }
 
-  async getPullRequestFiles(ctx: IGetPullRequestFiles) {
+  async getPullRequestFiles(ctx: IGetPullRequestFiles): Promise<IFileChange[]> {
     const { owner, repositoryName, installationId } = ctx;
     const jwtToken = jwt.sign(
       {
