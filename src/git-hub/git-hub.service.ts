@@ -1,17 +1,17 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { App, Octokit } from 'octokit';
 import { ConfigService } from '@nestjs/config';
-import { IGithubConfig } from '../config/interface/config.interface';
-import { WebhookEvents } from './enums/webhook-events.enum';
-import { PullRequestEventService } from '../pull-request-event/pull-request-event.service';
-import { IssueCommentService } from '../issue-comment/issue-comment.service';
-import { IPostCommentPayload } from './interfaces/post-comment-payload.interface';
-import { IGetPullRequestFiles } from './interfaces/get-pull-request-files.interface';
-import { IWekhookPayload } from './interfaces/github-wekhook.interface';
-import { IFileChange } from '../pull-request-event/interfaces/file-changes.interface';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
+import { IGithubConfig } from '../config/interface/config.interface';
+import { PullRequestEventService } from '../pull-request-event/pull-request-event.service';
+import { IssueCommentService } from '../issue-comment/issue-comment.service';
+import { IFileChange } from '../pull-request-event/interfaces/file-changes.interface';
+import { WebhookEvents } from './enums/webhook-events.enum';
+import { IPostCommentPayload } from './interfaces/post-comment-payload.interface';
+import { IGetPullRequestFiles } from './interfaces/get-pull-request-files.interface';
+import { IWekhookPayload } from './interfaces/github-wekhook.interface';
 
 @Injectable()
 export class GitHubService {

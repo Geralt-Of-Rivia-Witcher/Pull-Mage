@@ -1,7 +1,7 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { PullRequestActionType } from './enums/pulll-request-actions.enum';
-import { GitHubService } from '../git-hub/git-hub.service';
 import { ChatGptService } from 'src/chat-gpt/chat-gpt.service';
+import { GitHubService } from '../git-hub/git-hub.service';
+import { PullRequestActionType } from './enums/pulll-request-actions.enum';
 import { IFileChange } from './interfaces/file-changes.interface';
 import { IValidCommentRequest } from './interfaces/get-pr-review.interface';
 import { IPullRequestEvent } from './interfaces/pull-request-event.interface';
