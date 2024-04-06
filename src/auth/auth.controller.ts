@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { CreateUserDto } from '../users/dtos/create-user.dto';
+import { RegisterUserDto } from '../users/dtos/create-user.dto';
 import { User } from '../users/schemas/user.schema';
 import { AuthService } from './auth.service';
 
@@ -15,7 +15,7 @@ export class AuthController {
   }
 
   @Post('/sign-up')
-  handleSignUp(@Body() data: CreateUserDto): Promise<User> {
+  handleSignUp(@Body() data: RegisterUserDto): Promise<User> {
     return this.authService.handleSignUp(data);
   }
 }

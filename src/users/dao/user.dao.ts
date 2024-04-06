@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
-import { CreateUserDto } from '../dtos/create-user.dto';
+import { ICreateUser } from '../interfaces/create-user.interface';
 
 @Injectable()
 export class UserDao {
@@ -15,7 +15,7 @@ export class UserDao {
     return await this.userModel.findOne({ gitHubUsername });
   }
 
-  async create(ctx: CreateUserDto) {
+  async create(ctx: ICreateUser) {
     return await this.userModel.create(ctx);
   }
 }

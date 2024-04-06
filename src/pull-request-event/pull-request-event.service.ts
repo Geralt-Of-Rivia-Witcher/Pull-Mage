@@ -1,6 +1,7 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ChatGptService } from 'src/chat-gpt/chat-gpt.service';
 import { GitHubService } from '../git-hub/git-hub.service';
+import { UsersService } from '../users/users.service';
 import { PullRequestActionType } from './enums/pulll-request-actions.enum';
 import { IFileChange } from './interfaces/file-changes.interface';
 import { IValidCommentRequest } from './interfaces/get-pr-review.interface';
@@ -12,6 +13,7 @@ export class PullRequestEventService {
     @Inject(forwardRef(() => GitHubService))
     private readonly gitHubService: GitHubService,
     private readonly chatGptService: ChatGptService,
+    private readonly userService: UsersService,
   ) {}
 
   async handlePullRequestEvents(payload: IPullRequestEvent) {
@@ -41,15 +43,21 @@ export class PullRequestEventService {
   }
 
   async performValidCommentAction(ctx: IValidCommentRequest) {
+    const { owner } = ctx;
+    const isEligibleForResponse =
+      await this.userService.canPerformAction(owner);
+    if (!isEligibleForResponse) {
+      return;
+    }
     const fileChanges = await this.gitHubService.getPullRequestFiles(ctx);
     const formattedFileChanges = this.reformattedFileChanges(fileChanges);
-    const gptPrReview = await this.chatGptService.getGptResponse({
+    const gptPrResponse = await this.chatGptService.getGptResponse({
       ...ctx,
       fileChanges: formattedFileChanges,
     });
     this.gitHubService.postCommentOnPullRequest({
       ...ctx,
-      message: gptPrReview,
+      message: gptPrResponse,
     });
   }
 
