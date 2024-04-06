@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
-import { CreateUserDto } from '../users/dtos/create-user.dto';
+import { RegisterUserDto } from '../users/dtos/create-user.dto';
 import { User } from '../users/schemas/user.schema';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class AuthService {
     return this.userService.checkUserExists(gitHubUsername);
   }
 
-  async handleSignUp(ctx: CreateUserDto): Promise<User> {
+  async handleSignUp(ctx: RegisterUserDto): Promise<User> {
     const { gitHubUsername, password } = ctx;
 
     const hashedPassword = await bcrypt.hash(password, this.saltRounds);

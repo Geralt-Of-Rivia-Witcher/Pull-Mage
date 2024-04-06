@@ -6,8 +6,17 @@ export class User {
   @Prop({ required: true, type: String, unique: true })
   gitHubUsername: string;
 
-  @Prop({ required: true, type: String })
+  @Prop({ type: String })
   password: string;
+
+  @Prop({ required: true, type: Number, default: 0 })
+  inputTokensConsumed: number;
+
+  @Prop({ required: true, type: Number, default: 0 })
+  outputTokensConsumed: number;
+
+  @Prop({ type: String })
+  openAIapiKey: string;
 }
 
 export type UserDocument = User & Document;
