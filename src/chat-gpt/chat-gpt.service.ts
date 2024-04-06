@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { IOpenAIConfig } from '../config/interface/config.interface';
 import { IChatGptRequest } from './interfaces/chat-gpt-request.interface';
-import { ChatGptRequestType } from './interfaces/chat-gpt-request-type.interface';
+import { ChatGptRequestType } from './enums/chat-gpt-request-type.enum';
 
 @Injectable()
 export class ChatGptService {

@@ -1,4 +1,4 @@
-import { ChatGptRequestType } from './chat-gpt-request-type.interface';
+import { ChatGptRequestType } from '../enums/chat-gpt-request-type.enum';
 
 export interface IChatGptRequest {
   type: ChatGptRequestType;

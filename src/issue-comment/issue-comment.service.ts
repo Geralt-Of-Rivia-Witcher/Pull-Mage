@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PullRequestEventService } from '../pull-request-event/pull-request-event.service';
-import { ChatGptRequestType } from '../chat-gpt/interfaces/chat-gpt-request-type.interface';
+import { ChatGptRequestType } from '../chat-gpt/enums/chat-gpt-request-type.enum';
 import { IssueCommentActions } from './enums/issue-comment-actions.enum';
 import { IssueComments } from './enums/issue-comments.enum';
 import { IHandleIssueCommentPayload } from './interfaces/handle-issue-comment-payload.interface';
