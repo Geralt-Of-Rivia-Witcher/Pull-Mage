@@ -11,17 +11,22 @@ export class AuthService {
     this.saltRounds = 10;
   }
 
-  async handleSignUp(ctx: CreateUserDto): Promise<User> {
-    const { username, password } = ctx;
-    if (!username || !password) {
+  async checkUserExists(gitHubUsername: string): Promise<boolean> {
+    if (!gitHubUsername) {
       throw new HttpException(
-        'Username or password missing',
+        'GitHub username missing',
         HttpStatus.BAD_REQUEST,
       );
     }
+    return this.userService.checkUserExists(gitHubUsername);
+  }
+
+  async handleSignUp(ctx: CreateUserDto): Promise<User> {
+    const { gitHubUsername, password } = ctx;
+
     const hashedPassword = await bcrypt.hash(password, this.saltRounds);
     return this.userService.createUser({
-      username,
+      gitHubUsername,
       password: hashedPassword,
     });
   }

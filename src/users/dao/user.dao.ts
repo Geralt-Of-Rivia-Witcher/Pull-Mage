@@ -11,6 +11,10 @@ export class UserDao {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
+  async getUser(gitHubUsername: string): Promise<User> {
+    return await this.userModel.findOne({ gitHubUsername });
+  }
+
   async create(ctx: CreateUserDto) {
     return await this.userModel.create(ctx);
   }
