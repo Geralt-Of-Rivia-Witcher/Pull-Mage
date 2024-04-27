@@ -3,6 +3,7 @@ import { IConfig } from './interface/config.interface';
 export const config = (): IConfig => ({
   app: {
     port: process.env.APP_PORT,
+    jwtSecret: process.env.JWT_SECRET,
   },
   github: {
     appId: process.env.GITHUB_APP_ID,

@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { User } from '../users/schemas/user.schema';
+import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { AuthService } from './auth.service';
 import { ICheckUserResponse } from './interface/check-user-response.interface';
@@ -15,8 +15,16 @@ export class AuthController {
     return await this.authService.checkUserExists(gitHubUsername);
   }
 
-  @Post('/sign-up')
-  handleSignUp(@Body() data: RegisterUserDto): Promise<User> {
-    return this.authService.handleSignUp(data);
+  @Post('/log-in')
+  async handleSignUp(
+    @Body() data: RegisterUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.authService.handleLogIn(data);
+    response.cookie('accessToken', result.accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
   }
 }

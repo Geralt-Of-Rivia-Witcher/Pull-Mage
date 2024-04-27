@@ -4,8 +4,9 @@ export interface IGithubConfig {
   privateKey: string;
 }
 
-interface IAppConfig {
+export interface IAppConfig {
   port: string;
+  jwtSecret: string;
 }
 
 export interface IOpenAIConfig {
