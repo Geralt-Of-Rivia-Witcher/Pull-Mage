@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { ICheckUserResponse } from 'src/auth/interface/check-user-response.interface';
+import { RegisterUserDto } from '../auth/dtos/register-user.dto';
 import { UserDao } from './dao/user.dao';
-import { RegisterUserDto } from './dtos/create-user.dto';
 import { User } from './schemas/user.schema';
 
 @Injectable()
@@ -16,9 +17,15 @@ export class UsersService {
     this.freeCreditLimit = 0.095;
   }
 
-  async checkUserExists(gitHubUsername: string): Promise<boolean> {
+  async checkUserExists(gitHubUsername: string): Promise<ICheckUserResponse> {
     const user = await this.userDao.getUser(gitHubUsername);
-    return !!user;
+    if (!user) {
+      return { userExists: false, isSignedUp: false };
+    }
+    if (!user.password) {
+      return { userExists: true, isSignedUp: false };
+    }
+    return { userExists: true, isSignedUp: true };
   }
 
   async getOrCreateUser(gitHubUsername: string): Promise<User> {
@@ -50,5 +57,16 @@ export class UsersService {
       (this.inputCostPerMillionTokens / this.million) * inputTokensConsumed +
       (this.outputCostPerMillionTokens / this.million) * outputTokensConsumed
     );
+  }
+
+  async getUser(gitHubUsername: string): Promise<User | null> {
+    return this.userDao.getUser(gitHubUsername);
+  }
+
+  async updatePassword(
+    gitHubUsername: string,
+    password: string,
+  ): Promise<User> {
+    return this.userDao.updatePassword(gitHubUsername, password);
   }
 }

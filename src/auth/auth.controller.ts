@@ -1,7 +1,8 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { RegisterUserDto } from '../users/dtos/create-user.dto';
 import { User } from '../users/schemas/user.schema';
+import { RegisterUserDto } from './dtos/register-user.dto';
 import { AuthService } from './auth.service';
+import { ICheckUserResponse } from './interface/check-user-response.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -10,7 +11,7 @@ export class AuthController {
   @Get('/check-user-exists')
   async checkUserExists(
     @Query('gitHubUsername') gitHubUsername: string,
-  ): Promise<boolean> {
+  ): Promise<ICheckUserResponse> {
     return await this.authService.checkUserExists(gitHubUsername);
   }
 

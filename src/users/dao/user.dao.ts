@@ -11,11 +11,22 @@ export class UserDao {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async getUser(gitHubUsername: string): Promise<User> {
+  async getUser(gitHubUsername: string): Promise<User | null> {
     return await this.userModel.findOne({ gitHubUsername });
   }
 
   async create(ctx: ICreateUser) {
     return await this.userModel.create(ctx);
+  }
+
+  async updatePassword(
+    gitHubUsername: string,
+    password: string,
+  ): Promise<User> {
+    return await this.userModel.findOneAndUpdate(
+      { gitHubUsername },
+      { password },
+      { new: true },
+    );
   }
 }

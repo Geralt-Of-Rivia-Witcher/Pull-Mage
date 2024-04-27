@@ -7,7 +7,7 @@ export class User {
   gitHubUsername: string;
 
   @Prop({ type: String })
-  password: string;
+  password?: string;
 
   @Prop({ required: true, type: Number, default: 0 })
   inputTokensConsumed: number;
