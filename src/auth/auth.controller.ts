@@ -1,8 +1,18 @@
-import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { AuthService } from './auth.service';
 import { ICheckUserResponse } from './interface/check-user-response.interface';
+import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -26,5 +36,11 @@ export class AuthController {
       secure: true,
       sameSite: 'none',
     });
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/test')
+  check(@Req() req: Request) {
+    return 'Hello';
   }
 }
