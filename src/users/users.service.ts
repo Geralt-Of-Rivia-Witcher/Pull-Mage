@@ -3,6 +3,7 @@ import { ICheckUserResponse } from 'src/auth/interface/check-user-response.inter
 import { RegisterUserDto } from '../auth/dtos/register-user.dto';
 import { UserDao } from './dao/user.dao';
 import { User } from './schemas/user.schema';
+import { UpdateOpenAIApiKeyDto } from './dtos/update-openai-api-key.dto';
 
 @Injectable()
 export class UsersService {
@@ -68,5 +69,16 @@ export class UsersService {
     password: string,
   ): Promise<User> {
     return this.userDao.updatePassword(gitHubUsername, password);
+  }
+
+  async updateOpenAIApiKey(
+    req: Request,
+    data: UpdateOpenAIApiKeyDto,
+  ): Promise<User> {
+    const user: User = req['user'];
+    return this.userDao.updateOpenAIApiKey(
+      user.gitHubUsername,
+      data.openAIapiKey,
+    );
   }
 }

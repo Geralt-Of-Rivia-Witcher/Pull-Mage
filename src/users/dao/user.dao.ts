@@ -29,4 +29,15 @@ export class UserDao {
       { new: true },
     );
   }
+
+  async updateOpenAIApiKey(
+    gitHubUsername: string,
+    openAIapiKey: string,
+  ): Promise<User> {
+    return await this.userModel.findOneAndUpdate(
+      { gitHubUsername },
+      { openAIapiKey },
+      { new: true },
+    );
+  }
 }
